@@ -735,6 +735,9 @@ extension RTMPStream: _Stream {
                     let decodeTimeStamp = sampleBuffer.decodeTimeStamp.isValid ? sampleBuffer.decodeTimeStamp : sampleBuffer.presentationTimeStamp
                     let timedelta = try videoTimestamp.update(decodeTimeStamp)
                     frameCount += 1
+                    if !sampleBuffer.isNotSync {
+                        info.recordKeyFrame(uptime: ProcessInfo.processInfo.systemUptime)
+                    }
                     videoFormat = sampleBuffer.formatDescription
                     guard let message = RTMPVideoMessage(streamId: id, timestamp: timedelta, sampleBuffer: sampleBuffer) else {
                         return
