@@ -62,6 +62,32 @@ public final actor MediaMixer {
     }
     #endif
 
+    #if os(iOS) || os(tvOS)
+    /// Whether the capture session can keep the camera running while the app is in Picture-in-Picture, Split View or
+    /// Slide Over (`AVCaptureSession.isMultitaskingCameraAccessSupported`). On iPhone this needs the
+    /// `com.apple.developer.avfoundation.multitasking-camera-access` entitlement or the `voip` background mode.
+    @available(tvOS 17.0, *)
+    public var isMultitaskingCameraAccessSupported: Bool {
+        session.isMultitaskingCameraAccessSupported
+    }
+
+    /// Whether multitasking camera access is on for the capture session.
+    @available(tvOS 17.0, *)
+    public var isMultitaskingCameraAccessEnabled: Bool {
+        session.isMultitaskingCameraAccessEnabled
+    }
+
+    /// Turns multitasking camera access on or off for the capture session, and returns the resulting state. While it is
+    /// on, the mixer no longer suspends video capture when the app moves to the background (see `setInBackground`), so
+    /// the app is responsible for being in a mode where the system lets the camera run, such as Picture-in-Picture
+    /// with video call content. Returns false and changes nothing where it is not supported.
+    @available(tvOS 17.0, *)
+    @discardableResult
+    public func setMultitaskingCameraAccessEnabled(_ enabled: Bool) -> Bool {
+        session.setMultitaskingCameraAccessEnabled(enabled)
+    }
+    #endif
+
     #if os(iOS) || os(macOS) || os(tvOS)
     /// The device torch indicating wheter the turn on(TRUE) or not(FALSE).
     public var isTorchEnabled: Bool {

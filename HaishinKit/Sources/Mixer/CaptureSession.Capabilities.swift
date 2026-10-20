@@ -30,6 +30,14 @@ extension CaptureSession {
         func isMultitaskingCameraAccessEnabled(_ session: AVCaptureSession) -> Bool {
             false
         }
+
+        func isMultitaskingCameraAccessSupported(_ session: AVCaptureSession) -> Bool {
+            false
+        }
+
+        func setMultitaskingCameraAccessEnabled(_ enabled: Bool, session: AVCaptureSession) -> Bool {
+            false
+        }
     }
     #elseif os(iOS) || os(tvOS)
     struct Capabilities {
@@ -70,6 +78,32 @@ extension CaptureSession {
         }
 
         @available(tvOS 17.0, *)
+        func isMultitaskingCameraAccessSupported(_ session: AVCaptureSession) -> Bool {
+            if #available(iOS 16.0, tvOS 17.0, *) {
+                session.isMultitaskingCameraAccessSupported
+            } else {
+                false
+            }
+        }
+
+        /// Turns multitasking camera access on or off and returns the resulting state. It stays off, and this returns
+        /// false, where the session does not support it (no entitlement or `voip` mode, or an older OS).
+        @available(tvOS 17.0, *)
+        func setMultitaskingCameraAccessEnabled(_ enabled: Bool, session: AVCaptureSession) -> Bool {
+            if #available(iOS 16.0, tvOS 17.0, *) {
+                guard session.isMultitaskingCameraAccessSupported else {
+                    return false
+                }
+                session.beginConfiguration()
+                session.isMultitaskingCameraAccessEnabled = enabled
+                session.commitConfiguration()
+                return session.isMultitaskingCameraAccessEnabled
+            } else {
+                return false
+            }
+        }
+
+        @available(tvOS 17.0, *)
         func makeSession(_ sessionPreset: AVCaptureSession.Preset) -> AVCaptureSession {
             let session: AVCaptureSession
             if isMultiCamSessionEnabled {
@@ -98,6 +132,14 @@ extension CaptureSession {
         }
 
         func isMultitaskingCameraAccessEnabled(_ session: AVCaptureSession) -> Bool {
+            false
+        }
+
+        func isMultitaskingCameraAccessSupported(_ session: AVCaptureSession) -> Bool {
+            false
+        }
+
+        func setMultitaskingCameraAccessEnabled(_ enabled: Bool, session: AVCaptureSession) -> Bool {
             false
         }
     }

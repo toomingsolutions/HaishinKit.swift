@@ -16,6 +16,13 @@ protocol CaptureSessionConvertible: Runner {
     var isMultitaskingCameraAccessEnabled: Bool { get }
 
     @available(tvOS 17.0, *)
+    var isMultitaskingCameraAccessSupported: Bool { get }
+
+    @available(tvOS 17.0, *)
+    @discardableResult
+    func setMultitaskingCameraAccessEnabled(_ enabled: Bool) -> Bool
+
+    @available(tvOS 17.0, *)
     func attachCapture(_ capture: (any DeviceUnit)?)
     @available(tvOS 17.0, *)
     func detachCapture(_ capture: (any DeviceUnit)?)
@@ -42,6 +49,15 @@ final class CaptureSession {
 
     var isMultitaskingCameraAccessEnabled: Bool {
         capabilities.isMultitaskingCameraAccessEnabled(session)
+    }
+
+    var isMultitaskingCameraAccessSupported: Bool {
+        capabilities.isMultitaskingCameraAccessSupported(session)
+    }
+
+    @discardableResult
+    func setMultitaskingCameraAccessEnabled(_ enabled: Bool) -> Bool {
+        capabilities.setMultitaskingCameraAccessEnabled(enabled, session: session)
     }
 
     @AsyncStreamedFlow
@@ -102,6 +118,23 @@ final class CaptureSession {
     var isMultitaskingCameraAccessEnabled: Bool {
         if #available(tvOS 17.0, *) {
             capabilities.isMultitaskingCameraAccessEnabled(session)
+        } else {
+            false
+        }
+    }
+
+    var isMultitaskingCameraAccessSupported: Bool {
+        if #available(tvOS 17.0, *) {
+            capabilities.isMultitaskingCameraAccessSupported(session)
+        } else {
+            false
+        }
+    }
+
+    @discardableResult
+    func setMultitaskingCameraAccessEnabled(_ enabled: Bool) -> Bool {
+        if #available(tvOS 17.0, *) {
+            capabilities.setMultitaskingCameraAccessEnabled(enabled, session: session)
         } else {
             false
         }
@@ -320,7 +353,13 @@ final class NullCaptureSession: CaptureSessionConvertible {
     let isCapturing: Bool = false
     var isMultiCamSessionEnabled = false
     let isMultitaskingCameraAccessEnabled = false
+    let isMultitaskingCameraAccessSupported = false
     let synchronizationClock: CMClock? = nil
+
+    @discardableResult
+    func setMultitaskingCameraAccessEnabled(_ enabled: Bool) -> Bool {
+        false
+    }
 
     @AsyncStreamed(false)
     var isInturreped: AsyncStream<Bool>
